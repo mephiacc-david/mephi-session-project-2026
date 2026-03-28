@@ -1,0 +1,67 @@
+    1  > ~/.bash_history
+    2  history -w
+    3  clear
+    4  hostnamectl set-hostname mephi-2026.domain.local
+    5  hostnamectl
+    6  ip route
+    7  ping -c 4 8.8.8.8
+    8  ping -c 4 10.129.0.1
+    9  ping -c 4 8.8.8.8 > /tmp/network_check.txt
+   10  ping -c 4 10.129.0.1 >> /tmp/network_check.txt
+   11  sudo dnf install -y nginx tcpdump libcap-ng-utils policycoreutils-python-utils
+   12  cd /tmp
+   13  dnf download tcpdump
+   14  sudo rpm -Uvh tcpdump*.rpm
+   15  sudo mkdir -p /data/mephi-web
+   16  sudo fallocate -l 3G /root/disk.img
+   17  sudo losetup -fP /root/disk.img
+   18  sudo losetup -a
+   19  sudo parted -s /dev/loop0 mklabel gpt
+   20  sudo parted -s /dev/loop0 mkpart primary ext4 1MiB 100%
+   21  sudo mkfs.ext4 -L MEPHI_DATA /dev/loop0p1
+   22  sudo mount /dev/loop0p1 /data/mephi-web
+   23  df -h
+   24  sudo cp /etc/fstab /etc/fstab.bak
+   25  echo 'LABEL=MEPHI_DATA /data/mephi-web ext4 defaults 0 2' | sudo tee -a /etc/fstab
+   26  sudo systemctl enable --now nginx
+   27  systemctl status nginx --no-pager
+   28  sudo journalctl -u nginx --since "5 minutes ago" > /tmp/nginx_recent_logs.txt
+   29  sudo groupadd mephi-devs
+   30  sudo usermod -aG mephi-devs mephi-admin
+   31  echo 'mephi-admin:P@ssw0rd2026' | sudo chpasswd
+   32  sudo chown mephi-admin:mephi-devs /data/mephi-web
+   33  sudo chmod 2775 /data/mephi-web
+   34  getenforce
+   35  sudo setenforce 1
+   36  sudo semanage fcontext -a -t httpd_sys_content_t "/data/mephi-web(/.*)?"
+   37  sudo restorecon -Rv /data/mephi-web
+   38  sudo nano /etc/nginx/conf.d/mephi-web.conf
+   39  sudo nginx -t
+   40  sudo systemctl restart nginx
+   41  sudo -u mephi-admin bash -c 'echo "Hello from Student: 368555" > /data/mephi-web/index.html'
+   42  sudo firewall-cmd --permanent --add-service=http
+   43  sudo firewall-cmd --reload
+   44  sudo setcap cap_net_raw,cap_net_admin=eip /usr/sbin/tcpdump
+   45  getcap /usr/sbin/tcpdump
+   46  sudo -u mephi-admin tcpdump --help
+   47  sudo nano /etc/ssh/sshd_config
+   48  sudo systemctl restart sshd
+   49  sudo usermod -s /usr/sbin/nologin root
+   50  curl http://localhost
+   51  curl http://$(hostname -I | awk '{print $1}')
+   52  cp /tmp/network_check.txt ~/network_check.txt
+   53  cp /tmp/nginx_recent_logs.txt ~/nginx_recent_logs.txt
+   54  cp /etc/fstab ~/fstab.txt
+   55  getenforce > ~/selinux_status.txt
+   56  ls -Zd /data/mephi-web > ~/file_contexts.txt
+   57  getcap /usr/sbin/tcpdump > ~/tcpdump_capabilities.txt
+   58  stat /data/mephi-web > ~/permissions.txt
+   59  id mephi-admin > ~/users_groups.txt
+   60  getent group mephi-devs >> ~/users_groups.txt
+   61  curl -s http://$(hostname -I | awk '{print $1}') > ~/curl_output.txt
+   62  cp /data/mephi-web/index.html ~/index.html
+   63  cp /tmp/tcpdump*.rpm ~/
+   64  history > ~/project_history.txt
+   65  cat ~/project_history.txt
+   66  cp project_history.txt \ network_check.txt \ nginx_recent_logs.txt \ fstab.txt \ selinux_status.txt \ file_contexts.txt \ tcpdump_capabilities.txt \ permissions.txt \ users_groups.txt \ index.html \ curl_output.txt \ tcpdump-*.rpm \ mephi-session-project-2026/
+   67   history > ~/project_history.txt
